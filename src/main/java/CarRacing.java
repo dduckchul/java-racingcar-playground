@@ -1,5 +1,7 @@
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringJoiner;
 
 import util.CarRacingValues;
 import util.IoUtils;
@@ -38,21 +40,31 @@ public class CarRacing {
 	public void announceWinner() {
 		List<Car> carList = racers.getCarList();
 		Collections.sort(carList);
+		List<Car> winnerList = getWinners(carList);
 
-		Position firstPlacePosition = carList.get(0).getPosition();
-		StringBuffer sb = new StringBuffer();
-		for (Car car : carList) {
-			sb.append(getWinnerName(car, firstPlacePosition));
+		StringJoiner joiner = new StringJoiner(",");
+		for(Car car : winnerList){
+			joiner.add(car.getName());
 		}
-		sb.append(CarRacingValues.WINNER_ANNOUNCE_STRING);
+		String winnerString = joiner.toString().concat(CarRacingValues.WINNER_ANNOUNCE_STRING);
 
-		IoUtils.printMsg(sb.toString());
+		IoUtils.printMsg(winnerString);
 	}
 
-	public String getWinnerName(Car car, Position firstPlacePosition) {
-		if (car.getPosition().getPosition() == firstPlacePosition.getPosition()) {
-			return car.getName() + ",";
+	public List<Car> getWinners(List<Car> carList){
+		List<Car> winnerList = new ArrayList<>();
+		Position firstPlacePosition = carList.get(0).getPosition();
+
+		for (Car car : carList) {
+			addWinner(car, firstPlacePosition, winnerList);
 		}
-		return "";
+
+		return winnerList;
+	}
+
+	public void addWinner(Car car, Position firstPlacePosition, List<Car> winnerList) {
+		if (car.getPosition().getPosition() == firstPlacePosition.getPosition()) {
+			winnerList.add(car);
+		}
 	}
 }
